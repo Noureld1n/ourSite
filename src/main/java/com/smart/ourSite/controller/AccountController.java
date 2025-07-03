@@ -17,7 +17,6 @@ public class AccountController {
 
     private final AdminService adminService;
 
-    // GET /admin/profile
     @GetMapping
     public ResponseEntity<AccountResponseDTO> getProfile(
             @AuthenticationPrincipal AdminDetails adminDetails) {
@@ -25,7 +24,6 @@ public class AccountController {
         return ResponseEntity.ok(adminService.getProfile(email));
     }
 
-    // PUT /admin/profile
     @PutMapping
     public ResponseEntity<?> updateProfile(
             @AuthenticationPrincipal AdminDetails adminDetails,
