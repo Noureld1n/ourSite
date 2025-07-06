@@ -4,6 +4,7 @@ import com.smart.ourSite.dto.request.AdminRequestDTO;
 import com.smart.ourSite.dto.request.AdminUpdateDTO;
 import com.smart.ourSite.dto.response.AdminResponseDTO;
 import com.smart.ourSite.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,12 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAdmin(@RequestBody AdminRequestDTO dto) {
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody AdminRequestDTO dto) {
         return ResponseEntity.ok(adminService.createAdmin(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAdmin(@PathVariable Long id, @RequestBody AdminUpdateDTO dto) {
+    public ResponseEntity<?> updateAdmin(@PathVariable Long id, @Valid @RequestBody AdminUpdateDTO dto) {
         return ResponseEntity.ok(adminService.updateAdminFields(id, dto));
     }
 

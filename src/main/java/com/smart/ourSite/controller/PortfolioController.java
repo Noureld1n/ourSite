@@ -1,7 +1,9 @@
 package com.smart.ourSite.controller;
+
 import com.smart.ourSite.dto.request.PortfolioRequestDTO;
 import com.smart.ourSite.dto.response.PortfolioResponseDTO;
 import com.smart.ourSite.service.PortfolioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +23,15 @@ public class PortfolioController {
     }
 
     @PostMapping
-    public ResponseEntity<PortfolioResponseDTO> createPortfolio(@RequestBody PortfolioRequestDTO dto) {
+    public ResponseEntity<PortfolioResponseDTO> createPortfolio(@Valid @RequestBody PortfolioRequestDTO dto) {
         return ResponseEntity.ok(portfolioService.createPortfolio(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PortfolioResponseDTO> updatePortfolio(@PathVariable Long id, @RequestBody PortfolioRequestDTO dto) {
+    public ResponseEntity<PortfolioResponseDTO> updatePortfolio(
+            @PathVariable Long id,
+            @Valid @RequestBody PortfolioRequestDTO dto
+    ) {
         return ResponseEntity.ok(portfolioService.updatePortfolio(id, dto));
     }
 

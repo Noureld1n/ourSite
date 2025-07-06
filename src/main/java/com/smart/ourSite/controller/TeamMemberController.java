@@ -3,6 +3,7 @@ package com.smart.ourSite.controller;
 import com.smart.ourSite.dto.request.TeamMemberRequestDTO;
 import com.smart.ourSite.dto.response.TeamMemberResponseDTO;
 import com.smart.ourSite.service.TeamMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,28 +19,24 @@ public class TeamMemberController {
 
     @GetMapping
     public ResponseEntity<List<TeamMemberResponseDTO>> getAllTeamMembers() {
-        List<TeamMemberResponseDTO> members = teamMemberService.getAllMembers();
-        return ResponseEntity.ok(members);
+        return ResponseEntity.ok(teamMemberService.getAllMembers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TeamMemberResponseDTO> getTeamMemberById(@PathVariable Long id) {
-        TeamMemberResponseDTO member = teamMemberService.getMemberById(id);
-        return ResponseEntity.ok(member);
+        return ResponseEntity.ok(teamMemberService.getMemberById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TeamMemberResponseDTO> createTeamMember(@RequestBody TeamMemberRequestDTO dto) {
-        TeamMemberResponseDTO createdMember = teamMemberService.createMember(dto);
-        return ResponseEntity.ok(createdMember);
+    public ResponseEntity<TeamMemberResponseDTO> createTeamMember(@Valid @RequestBody TeamMemberRequestDTO dto) {
+        return ResponseEntity.ok(teamMemberService.createMember(dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TeamMemberResponseDTO> updateTeamMember(
             @PathVariable Long id,
-            @RequestBody TeamMemberRequestDTO dto) {
-        TeamMemberResponseDTO updatedMember = teamMemberService.updateMember(id, dto);
-        return ResponseEntity.ok(updatedMember);
+            @Valid @RequestBody TeamMemberRequestDTO dto) {
+        return ResponseEntity.ok(teamMemberService.updateMember(id, dto));
     }
 
     @DeleteMapping("/{id}")

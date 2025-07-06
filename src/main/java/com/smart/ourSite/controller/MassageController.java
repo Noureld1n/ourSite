@@ -21,13 +21,13 @@ public class MassageController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MassageResponseDTO>> searchMessages(@RequestParam String name) {
+    public ResponseEntity<List<MassageResponseDTO>> searchMessages(@RequestParam(name = "name") String name) {
         return ResponseEntity.ok(massageService.searchMessagesByName(name));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMessage(@PathVariable Long id) {
+    public ResponseEntity<?> deleteMessage(@PathVariable Long id) {
         massageService.deleteMassage(id);
-        return ResponseEntity.ok("Message deleted successfully.");
+        return ResponseEntity.ok().body("Message deleted successfully.");
     }
 }

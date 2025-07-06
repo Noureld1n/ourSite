@@ -3,6 +3,7 @@ package com.smart.ourSite.controller;
 import com.smart.ourSite.dto.request.BlogRequestDTO;
 import com.smart.ourSite.dto.response.BlogResponseDTO;
 import com.smart.ourSite.service.BlogService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,24 +19,22 @@ public class BlogController {
 
     @GetMapping
     public ResponseEntity<List<BlogResponseDTO>> listAllBlogs() {
-        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
-        return ResponseEntity.ok(blogs);
+        return ResponseEntity.ok(blogService.getAllBlogs());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BlogResponseDTO> getBlogDetails(@PathVariable Long id) {
-        BlogResponseDTO blog = blogService.getBlogById(id);
-        return ResponseEntity.ok(blog);
+        return ResponseEntity.ok(blogService.getBlogById(id));
     }
 
     @PostMapping
-    public ResponseEntity<String> createBlog(@RequestBody BlogRequestDTO blogRequest) {
+    public ResponseEntity<String> createBlog(@Valid @RequestBody BlogRequestDTO blogRequest) {
         blogService.createBlog(blogRequest);
         return ResponseEntity.ok("Blog created successfully.");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateBlog(@PathVariable Long id, @RequestBody BlogRequestDTO blogRequest) {
+    public ResponseEntity<String> updateBlog(@PathVariable Long id, @Valid @RequestBody BlogRequestDTO blogRequest) {
         blogService.updateBlog(id, blogRequest);
         return ResponseEntity.ok("Blog updated successfully.");
     }

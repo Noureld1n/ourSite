@@ -4,6 +4,7 @@ import com.smart.ourSite.dto.request.AdminRequestDTO;
 import com.smart.ourSite.dto.request.ForgotPasswordRequestDTO;
 import com.smart.ourSite.dto.request.ResetPasswordRequestDTO;
 import com.smart.ourSite.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +27,17 @@ public class AuthController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAdmin(@RequestBody AdminRequestDTO dto) {
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody AdminRequestDTO dto) {
         return authService.createAdmin(dto);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequestDTO request) {
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO request) {
         return authService.forgotPassword(request);
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO request) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO request) {
         return authService.resetPassword(request);
     }
 }
