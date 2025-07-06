@@ -1,24 +1,119 @@
 package com.smart.ourSite.service;
 
-import com.smart.ourSite.dto.request.AdminRequestDTO;
-import com.smart.ourSite.dto.response.AdminResponseDTO;
 import com.smart.ourSite.dto.request.AccountUpdateRequestDTO;
+import com.smart.ourSite.dto.request.AdminRequestDTO;
 import com.smart.ourSite.dto.response.AccountResponseDTO;
+import com.smart.ourSite.dto.response.AdminResponseDTO;
+import com.smart.ourSite.model.Admin;
+import com.smart.ourSite.repository.AdminRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
-public interface AdminService {
+@Service
+public class AdminService {
 
-    List<AdminResponseDTO> getAllAdmins();
+    private final AdminRepository adminRepository;
 
-    AdminResponseDTO getAdminById(Long id);
+    public AdminService(AdminRepository adminRepository) {
+        this.adminRepository = adminRepository;
+    }
 
-    AdminResponseDTO createAdmin(AdminRequestDTO dto);
 
-    AdminResponseDTO updateAdmin(Long id, AdminRequestDTO dto);
+    public List<AdminResponseDTO> getAllAdmins() {
+        return adminRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
 
-    void deleteAdmin(Long id);
 
-    AccountResponseDTO getProfile(String email);
-    AccountResponseDTO updateProfile(String email, AccountUpdateRequestDTO dto);
+    public AdminResponseDTO getAdminById(Long id) {
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        return mapToResponseDTO(admin);
+    }
+
+
+    public AdminResponseDTO createAdmin(AdminRequestDTO dto) {
+        Admin admin = new Admin();
+        mapRequestToEntity(dto, admin);
+        return mapToResponseDTO(adminRepository.save(admin));
+    }
+
+
+    public AdminResponseDTO updateAdmin(Long id, AdminRequestDTO dto) {
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        mapRequestToEntity(dto, admin);
+        return mapToResponseDTO(adminRepository.save(admin));
+    }
+
+
+    public void deleteAdmin(Long id) {
+        if (!adminRepository.existsById(id)) {
+            throw new RuntimeException("Admin not found");
+        }
+        adminRepository.deleteById(id);
+    }
+
+
+    public AccountResponseDTO getProfile(String email) {
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
+
+        return new AccountResponseDTO(
+                admin.getAdminId(),
+                admin.getAdminName(),
+                admin.getEmail(),
+                admin.getPhoneNumber(),
+                admin.getImage()
+        );
+    }
+
+
+    public AccountResponseDTO updateProfile(String email, AccountUpdateRequestDTO dto) {
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found"));
+
+        admin.setAdminName(dto.getAdminName());
+        admin.setPhoneNumber(dto.getPhoneNumber());
+
+        // Image upload handling can be added here later if needed
+        if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+            // For now, set a placeholder string
+            admin.setImage("uploaded-image-path.png");
+        }
+
+        adminRepository.save(admin);
+
+        return new AccountResponseDTO(
+                admin.getAdminId(),
+                admin.getAdminName(),
+                admin.getEmail(),
+                admin.getPhoneNumber(),
+                admin.getImage()
+        );
+    }
+
+    private void mapRequestToEntity(AdminRequestDTO dto, Admin admin) {
+        admin.setAdminName(dto.getAdminName());
+        admin.setImage(dto.getImage());
+        admin.setEmail(dto.getEmail());
+        admin.setAdminPassword(dto.getAdminPassword()); // Consider encoding
+        admin.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+    }
+
+    private AdminResponseDTO mapToResponseDTO(Admin admin) {
+        return new AdminResponseDTO(
+                admin.getAdminId(),
+                admin.getAdminName(),
+                admin.getImage(),
+                admin.getEmail(),
+                admin.getRegisterDate(),
+                admin.getIsActive()
+        );
+    }
 }
-

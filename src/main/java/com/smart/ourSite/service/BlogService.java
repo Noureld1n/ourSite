@@ -2,19 +2,81 @@ package com.smart.ourSite.service;
 
 import com.smart.ourSite.dto.request.BlogRequestDTO;
 import com.smart.ourSite.dto.response.BlogResponseDTO;
+import com.smart.ourSite.model.Blog;
+import com.smart.ourSite.repository.BlogRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public interface BlogService {
+@Service
+public class BlogService {
 
-    List<BlogResponseDTO> getAllBlogs();
+    private final BlogRepository blogRepository;
 
-    BlogResponseDTO getBlogById(Long id);
+    public BlogService(BlogRepository blogRepository) {
+        this.blogRepository = blogRepository;
+    }
 
-    BlogResponseDTO createBlog(BlogRequestDTO dto);
 
-    BlogResponseDTO updateBlog(Long id, BlogRequestDTO dto);
+    public List<BlogResponseDTO> getAllBlogs() {
+        return blogRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
 
-    void deleteBlog(Long id);
+
+    public BlogResponseDTO getBlogById(Long id) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        return mapToResponseDTO(blog);
+    }
+
+
+    public BlogResponseDTO createBlog(BlogRequestDTO dto) {
+        Blog blog = new Blog();
+        blog.setTitle(dto.getTitle());
+        blog.setSubtitle(dto.getSubtitle());
+        blog.setTag(dto.getTag());
+        blog.setCategory(dto.getCategory());
+        blog.setMainImage(dto.getMainImage());
+
+        return mapToResponseDTO(blogRepository.save(blog));
+    }
+
+
+    public BlogResponseDTO updateBlog(Long id, BlogRequestDTO dto) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+
+        blog.setTitle(dto.getTitle());
+        blog.setSubtitle(dto.getSubtitle());
+        blog.setTag(dto.getTag());
+        blog.setCategory(dto.getCategory());
+        blog.setMainImage(dto.getMainImage());
+
+        return mapToResponseDTO(blogRepository.save(blog));
+    }
+
+
+    public void deleteBlog(Long id) {
+        if (!blogRepository.existsById(id)) {
+            throw new RuntimeException("Blog not found");
+        }
+        blogRepository.deleteById(id);
+    }
+
+    private BlogResponseDTO mapToResponseDTO(Blog blog) {
+        return new BlogResponseDTO(
+                blog.getBlogId(),
+                blog.getTitle(),
+                blog.getSubtitle(),
+                blog.getTag(),
+                blog.getCategory(),
+                blog.getPublishDate(),
+                blog.getMainImage()
+        );
+    }
 }
 
